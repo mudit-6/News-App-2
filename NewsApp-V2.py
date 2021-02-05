@@ -4,7 +4,7 @@ import datetime
 import requests
 import json
 import webbrowser
-
+# -----------------------------------------------------------------------------------------
 
 def lineBreaker(text):
     """Break the line on every 80 letters"""
@@ -14,7 +14,6 @@ def lineBreaker(text):
         if i % 80 == 0 and i != 0:
             breaker += "\n"
     return breaker
-# ------------------------------------------------------------------------------------------
 
 
 def main_data_window(url_link, tab):
@@ -23,6 +22,7 @@ def main_data_window(url_link, tab):
         time = time.strftime("%H:%M:%S")
         time_label.config(text=time)
         time_label.after(1000, live_time)
+
     # A canvas
     my_canvas = tk.Canvas(tab)
     my_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
@@ -56,8 +56,6 @@ def main_data_window(url_link, tab):
     heading_lable.pack(side=tk.LEFT, anchor=tk.NE, padx=(110), pady=(9, 9))
 
     # Time label
-    # time = datetime.datetime.now()
-    # time = time.strftime("%H:%M:%S")
     time_label = tk.Label(frame0, font='mssans 21 bold', pady=4)
     time_label.pack(side=tk.RIGHT, anchor=tk.NW, padx=(9, 29), pady=(9, 9))
     live_time()
@@ -74,29 +72,48 @@ def main_data_window(url_link, tab):
     json_news = json.loads(news)
     articless = json_news['articles']
 
-    dic = {}
-    dic1 = {}
-    dic2 = {}
-    dic3 = {}
-    for index, article in enumerate(articless):
-        dic[f"title_label{index}"] = tk.Label(containter, text=lineBreaker(
-            article['title']), justify=tk.LEFT, font='mssans 17 bold', fg='#14213d')
-        dic[f"title_label{index}"].pack(anchor=tk.W, padx=(10, 0), pady=(5, 0))
+    title_lst = []
+    description_lst = []
+    url_lst = []
+    for article in articless:
+        if article['title'] == None:
+            title_lst.append('No Data.')
+        if article['description'] == None:
+            description_lst.append('No Data.')
+        else:
+            title_lst.append(article['title'])
+            description_lst.append(article['description'])
+            url_lst.append(article['url'])
 
-        dic1[f"description_label{index}"] = tk.Label(containter, text=lineBreaker(
-            article['description']), justify=tk.LEFT, font='mssans 15', fg='#457b9d')
-        dic1[f"description_label{index}"].pack(
-            anchor=tk.W, padx=(10, 0), pady=(5, 0))
+    for i in range(len(title_lst)):
+        # making variables 
+        title_lbl = 'title_lbl' + str(i) # title_lbl0, title_lbl1, .......
+        description_lbl = 'description_lbl' + str(i)
+        url_lbl = 'url_lbl' + str(i)
+        # seperator_lbl = 'seperator_lbl' + str(i)
 
-        dic2[f"url_label{index}"] = tk.Label(containter, text=lineBreaker(
-            article['url']), justify=tk.LEFT, font='mssans 13', fg='#d62828', cursor='hand2')
-        dic2[f"url_label{index}"].pack(anchor=tk.W, padx=(10, 0), pady=(5, 0))
-        dic2[f"url_label{index}"].bind(
-            "<Button-1>", lambda e, url=article['url']: webbrowser.open_new(url))
+        # title label
+        title_lbl = tk.Label(containter, text=lineBreaker(
+            title_lst[i]), justify=tk.LEFT, font='mssans 17 bold', fg='#14213d')
+        title_lbl.pack(anchor=tk.W, padx=(10, 0), pady=(5, 0))
 
-        dic3[f"seperator_label{index}"] = tk.Label(
+        # description lable
+        description_lbl = tk.Label(containter, text=lineBreaker(
+            description_lst[i]), justify=tk.LEFT, font='mssans 15', fg='#457b9d')
+        description_lbl.pack(anchor=tk.W, padx=(10, 0), pady=(5, 0))
+
+        # url label
+        url_lbl = tk.Label(containter, text=lineBreaker(
+            url_lst[i]), justify=tk.LEFT, font='mssans 13', fg='#d62828', cursor='hand2')
+        url_lbl.pack(anchor=tk.W, padx=(10, 0), pady=(5, 0))
+        # bind urls
+        url_lbl.bind("<Button-1>", lambda e,
+                     url=url_lst[i]: webbrowser.open_new(url))
+
+        # seperator line
+        seperator_lbl = tk.Label(
             containter, text=f"{'-'*180}", justify=tk.LEFT)
-        dic3[f"seperator_label{index}"].pack(anchor=tk.W)
+        seperator_lbl.pack(anchor=tk.W)
 # ----------------------------------------------------------------------------------------
 
 
@@ -123,15 +140,13 @@ def fun_open_tab5():
 def fun_open_tab6():
     my_notebook.select(6)
 
-
 def fun_open_tab7():
     my_notebook.select(7)
-
-
+# ------------------------------------------------------------------------------------------
 root = tk.Tk()
 root.geometry('1000x600')
 root.title('Daily News V2')
-root.iconbitmap(r'D:\Python Projects\News App version 2\nP.ico')
+root.iconbitmap(r'D:\Python Projects\News App version 2\Images\nP.ico')
 
 # notebook by ttk
 my_notebook = ttk.Notebook(root)
@@ -166,11 +181,11 @@ frame2 = tk.Frame(my_notebook)
 frame2.pack()
 main_data_window(
     'http://newsapi.org/v2/top-headlines?country=in&apiKey=0c508a20d8494af19d7b270a5cfb239e', frame2)
-
 # frame3 or tab3
 frame3 = tk.Frame(my_notebook)
 frame3.pack()
-# main_data_window('http://newsapi.org/v2/top-headlines?country=in&category=s&apiKey=0c508a20d8494af19d7b270a5cfb239e',frame3)
+main_data_window(
+    'http://newsapi.org/v2/top-headlines?country=in&category=business&apiKey=0c508a20d8494af19d7b270a5cfb239e', frame3)
 # frame4 or tab4
 frame4 = tk.Frame(my_notebook)
 frame4.pack()
